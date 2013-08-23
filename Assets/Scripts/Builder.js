@@ -44,7 +44,7 @@ function Explode() {
 	for (var i = 0; i < objects.length; i++) {
 		var object:GameObject = objects[i];
 		object.rigidbody.useGravity = true;
-		var power = 10000;
+		var power = 2000;
 		object.rigidbody.AddForce(new Vector3(power * (Random.value - 0.5f), power *  (Random.value - 0.5f), power  * (Random.value - 0.5f)));
 
 		WaitAndDestroy(objects[i]);
