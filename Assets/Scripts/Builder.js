@@ -144,7 +144,7 @@ function Update () {
 	}
    
     // Start pressing
-    if (Input.mousePosition.y < 128) {
+    if (Input.mousePosition.y < 256) {
 	  	pressStarted = true; 
 	  	pressedTime = 0; 
 	  	prevPosX = Input.mousePosition.x;
