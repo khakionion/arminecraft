@@ -8,9 +8,10 @@ function Select () {
 	startSelected = true;
 }
 
-function Reset () {
+function Reset() {
 	startSelected = false;
 	this.transform.localScale = Vector3.one;
+	renderer.material.SetColor("_EmisColor", colorStart);
 }
 
 function IsSelected () {
@@ -29,8 +30,7 @@ function Update () {
 		
 		var lerp = (t - 1) / (maxScale - 1);
 		var color = Color.Lerp(colorStart, colorEnd, lerp);
-		Debug.Log(color);
-		//renderer.material.SetColor("_EmisColor", color);
+		renderer.material.SetColor("_EmisColor", color);
 		
 		if (t > maxScale) {
 			t = maxScale;
