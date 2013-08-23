@@ -2,6 +2,7 @@ var Block : Transform;
 var baseTransform : Transform;
 var blockCount : float = 4.0f;
 var removeBlock: Transform;
+var uiCamera: Camera;
 
 private var textures = new Array();
 private var palettes = {};
@@ -16,10 +17,11 @@ function Start(){
 		var newBlock : Transform = Instantiate(Block, Vector3.zero, Quaternion.identity);
 		newBlock.renderer.material.mainTexture = textures[i];
 		newBlock.tag = "Block";
-		newBlock.parent = this.camera.transform;
+		newBlock.parent = this.uiCamera.transform;
 		newBlock.localPosition = new Vector3(-3 + 1.5f * i, -4, 15);
 		newBlock.localScale = Vector3.one;
 		newBlock.tag = 'Palette';
+		newBlock.gameObject.layer = 8;
 		newBlock.gameObject.AddComponent('Palette');
 		var component: Palette = newBlock.gameObject.GetComponent('Palette') as Palette;
 		component.SetIndex(i);
@@ -59,12 +61,16 @@ function Update () {
 				newBlock.transform.localScale = Vector3.one / blockCount;
 			}
 		}
-
+	}
+	
+	// UI
+	ray = this.uiCamera.ScreenPointToRay(Input.mousePosition);
+	if (Physics.Raycast(ray, hit, 1000) ) {
 		if (hit.transform.tag == "Palette") {
 			var palette: Palette = hit.collider.transform.GetComponent('Palette') as Palette;
 			this.SelectPalette(palette.GetIndex());
 		}
-		
+	
 		if (hit.transform.tag == "Reset") {
 			var objects = GameObject.FindGameObjectsWithTag("Block");
 			for (var i = 0; i < objects.length; i++) {
