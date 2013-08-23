@@ -144,9 +144,12 @@ function Update () {
 	}
    
     // Start pressing
-  	pressStarted = true; 
-  	pressedTime = 0; 
-  	prevPosX = Input.mousePosition.x;
+    if (Input.mousePosition.y < 128) {
+	  	pressStarted = true; 
+	  	pressedTime = 0; 
+	  	prevPosX = Input.mousePosition.x;
+    } 
+    
     
  	// UI 
 	var ray; 
