@@ -5,6 +5,11 @@ var removeBlock: Transform;
 var uiCamera: Camera;
 var destroyWait: float = 2.0f;
 
+var soundPut: AudioClip;
+var soundDig: AudioClip;
+var soundReset: AudioClip;
+var soundPalette: AudioClip;
+
 private var textures = new Array();
 private var palettes = {};
 private var selectedPaletteIndex: int = 0;
@@ -45,6 +50,7 @@ function Update () {
 			if(this.selectedPaletteIndex == -1){
 				if(hit.transform.tag == "Block"){
 					Destroy(hit.collider.gameObject);
+					audio.PlayOneShot(soundDig);
 				}
 			} else {
 				var buildPos : Vector3;
@@ -61,6 +67,8 @@ function Update () {
 				newBlock.tag = "Block";
 				newBlock.parent = this.baseTransform;
 				newBlock.transform.localScale = Vector3.one / blockCount;
+				
+				audio.PlayOneShot(soundPut);
 			}
 		}
 	}
@@ -71,6 +79,7 @@ function Update () {
 		if (hit.transform.tag == "Palette") {
 			var palette: Palette = hit.collider.transform.GetComponent('Palette') as Palette;
 			this.SelectPalette(palette.GetIndex());
+			audio.PlayOneShot(soundPalette);
 		}
 	
 		if (hit.transform.tag == "Reset") {
@@ -83,6 +92,7 @@ function Update () {
 
 				WaitAndDestroy(objects[i]);
 			}
+			audio.PlayOneShot(soundReset);
 		}
 	}
 }
