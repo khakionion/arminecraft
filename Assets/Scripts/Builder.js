@@ -40,14 +40,12 @@ function Start(){
 	}
 	
 	this.SelectPalette(0);
-	resetButton.gameObject.active = false;
 	
 	Screen.autorotateToPortraitUpsideDown = true;
 	Screen.autorotateToPortrait = true;
 	Screen.autorotateToLandscapeLeft = true;
 	Screen.autorotateToLandscapeRight = true;
 	Screen.orientation = ScreenOrientation.AutoRotation;
-	updateOrientation();
 }
 
 function Explode() {
@@ -66,11 +64,12 @@ function Explode() {
 
 
 function updateOrientation() {
+	camera.ResetAspect();
 	paletteTransform.localPosition = new Vector3(-7.2 * this.camera.aspect + 3.7, -2.5, 1.2);
 }
 
 function Update () {
-	
+	updateOrientation();
 	if (resetButton.IsFullSelected()) {
 		Explode();
 		resetButton.Reset();
@@ -106,7 +105,7 @@ function Update () {
 				}
 				else{
 					var point: Vector3 = hit.point;
-					buildPos = Vector3(Mathf.Round(point.x * blockCount) / blockCount, (Mathf.Ceil(point.y * blockCount) / blockCount), Mathf.Round(point.z * blockCount) / blockCount);;
+					buildPos = Vector3(Mathf.Round(point.x * blockCount) / blockCount, (Mathf.Ceil(point.y * blockCount) / blockCount) / 2, Mathf.Round(point.z * blockCount) / blockCount);;
 				}
 
 				var newBlock : Transform = Instantiate(Block, buildPos, Quaternion.identity);
