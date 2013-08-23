@@ -1,6 +1,7 @@
 var Block : Transform;
 var baseTransform : Transform;
 var paletteTransform: Transform;
+var sliderTransform: Transform;
 var blockCount : float = 4.0f;
 var removeBlock: Transform;
 var resetButton: ResetButton;
@@ -19,7 +20,7 @@ private var selectedPaletteIndex: int = 0;
 
 function Start(){
 	textures = Resources.LoadAll("Textures", Texture);
-	
+
 	this.palettes[-1] = removeBlock;
 	for (var i = 0; i < textures.length; i++) {
 	
@@ -27,7 +28,7 @@ function Start(){
 		Destroy(newBlock.gameObject.GetComponent('Rigidbody'));
 		newBlock.renderer.material.mainTexture = textures[i];
 		newBlock.tag = "Block";
-		newBlock.parent = paletteTransform;
+		newBlock.parent = sliderTransform;
 		newBlock.localPosition = new Vector3(-3 + 1.5f * i, -4, 15);
 		newBlock.localScale = Vector3.one;
 		newBlock.tag = 'Palette';
@@ -40,6 +41,13 @@ function Start(){
 	
 	this.SelectPalette(0);
 	resetButton.gameObject.active = false;
+	
+	Screen.autorotateToPortraitUpsideDown = true;
+	Screen.autorotateToPortrait = true;
+	Screen.autorotateToLandscapeLeft = true;
+	Screen.autorotateToLandscapeRight = true;
+	Screen.orientation = ScreenOrientation.AutoRotation;
+	updateOrientation();
 }
 
 function Explode() {
@@ -53,10 +61,16 @@ function Explode() {
 		WaitAndDestroy(objects[i]);
 	}
 	audio.PlayOneShot(soundReset);
-	resetButton.gameObject.active = false;
+	resetButton.gameObject.SetActive(false);
+}
+
+
+function updateOrientation() {
+	paletteTransform.localPosition = new Vector3(-7.2 * this.camera.aspect + 3.7, -2.5, 1.2);
 }
 
 function Update () {
+	
 	if (resetButton.IsFullSelected()) {
 		Explode();
 		resetButton.Reset();
@@ -92,9 +106,9 @@ function Update () {
 				}
 				else{
 					var point: Vector3 = hit.point;
-					buildPos = Vector3(Mathf.Round(point.x * blockCount) / blockCount, (Mathf.Ceil(point.y * blockCount) / blockCount) / 2, Mathf.Round(point.z * blockCount) / blockCount);;
+					buildPos = Vector3(Mathf.Round(point.x * blockCount) / blockCount, (Mathf.Ceil(point.y * blockCount) / blockCount), Mathf.Round(point.z * blockCount) / blockCount);;
 				}
-	
+
 				var newBlock : Transform = Instantiate(Block, buildPos, Quaternion.identity);
 				newBlock.renderer.material.mainTexture = textures[this.selectedPaletteIndex];
 				newBlock.tag = "Block";
