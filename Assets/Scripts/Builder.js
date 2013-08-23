@@ -2,6 +2,7 @@ var Block : Transform;
 var baseTransform : Transform;
 var blockCount : float = 4.0f;
 var removeBlock: Transform;
+var resetButton: ResetButton;
 var uiCamera: Camera;
 var destroyWait: float = 2.0f;
 
@@ -35,12 +36,41 @@ function Start(){
 	}
 	
 	this.SelectPalette(0);
+	resetButton.gameObject.active = false;
+}
+
+function Explode() {
+	var objects = GameObject.FindGameObjectsWithTag("Block");
+	for (var i = 0; i < objects.length; i++) {
+		var object:GameObject = objects[i];
+		object.rigidbody.useGravity = true;
+		var power = 10000;
+		object.rigidbody.AddForce(new Vector3(power * (Random.value - 0.5f), power *  (Random.value - 0.5f), power  * (Random.value - 0.5f)));
+
+		WaitAndDestroy(objects[i]);
+	}
+	audio.PlayOneShot(soundReset);
+	resetButton.gameObject.active = false;
 }
 
 function Update () {
+	if (resetButton.IsFullSelected()) {
+		Explode();
+		resetButton.Reset();
+	}
+	
+	if (Input.GetMouseButtonUp(0)) {
+		if (resetButton.IsSelected()) {
+			resetButton.Reset();
+		}
+		return;
+	}
+	
 	if(!Input.GetMouseButtonDown(0)){
 		return;
 	}
+	
+	var resetButtonPressed = false;
 	var ray : Ray = this.camera.ScreenPointToRay(Input.mousePosition);
 	var hit : RaycastHit;
 
@@ -69,6 +99,7 @@ function Update () {
 				newBlock.transform.localScale = Vector3.one / blockCount;
 				
 				audio.PlayOneShot(soundPut);
+				resetButton.gameObject.active = true;
 			}
 		}
 	}
@@ -83,17 +114,16 @@ function Update () {
 		}
 	
 		if (hit.transform.tag == "Reset") {
-			var objects = GameObject.FindGameObjectsWithTag("Block");
-			for (var i = 0; i < objects.length; i++) {
-				var object:GameObject = objects[i];
-				object.rigidbody.useGravity = true;
-				var power = 10000;
-				object.rigidbody.AddForce(new Vector3(power * (Random.value - 0.5f), power *  (Random.value - 0.5f), power  * (Random.value - 0.5f)));
-
-				WaitAndDestroy(objects[i]);
-			}
-			audio.PlayOneShot(soundReset);
+			resetButtonPressed = true;
 		}
+	}
+	
+	if (resetButtonPressed) {
+		if(!resetButton.IsSelected()) {
+			resetButton.Select();
+		}
+	} else {
+		resetButton.Reset();
 	}
 }
 
