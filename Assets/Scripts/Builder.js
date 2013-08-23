@@ -114,7 +114,7 @@ function Update () {
 			
 			sliderTransform.localPosition = new Vector3(newX, pos.y, pos.z); 
 		}
-		Debug.Log(delta);
+
 		pressedTime += Time.deltaTime;
 		if (pressedTime > reqPressTime) {
 			uiSelect();  
