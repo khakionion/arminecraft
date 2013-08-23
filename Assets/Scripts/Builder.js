@@ -87,10 +87,39 @@ function Update () {
 	}
 	
 	var resetButtonPressed = false;
-	var ray : Ray = this.camera.ScreenPointToRay(Input.mousePosition);
-	var hit : RaycastHit;
-
-	// Camera
+ 
+ 	// UI 
+ 	var uiPressed = false;
+	var ray = this.uiCamera.ScreenPointToRay(Input.mousePosition); 
+	var hit: RaycastHit;
+	if (Physics.Raycast(ray, hit, 1000) ) { 
+		if (hit.transform.tag == "Palette") { 
+			uiPressed = true;
+			var palette: Palette = hit.collider.transform.GetComponent('Palette') as Palette;
+			this.SelectPalette(palette.GetIndex());
+			audio.PlayOneShot(soundPalette);
+		}
+	
+		if (hit.transform.tag == "Reset") { 
+			uiPressed = true;
+			resetButtonPressed = true;
+		}
+	}
+	
+	if (resetButtonPressed) {
+		if(!resetButton.IsSelected()) {
+			resetButton.Select();
+		}
+	} else {
+		resetButton.Reset();
+	}
+	
+	if (uiPressed) {
+		return; 
+	}
+	
+	// Camera 
+	ray = this.camera.ScreenPointToRay(Input.mousePosition);
 	if (Physics.Raycast(ray, hit, 1000) ) {
 		if (hit.transform.tag == "Block" || hit.transform.tag == "Terrain") {
 			if(this.selectedPaletteIndex == -1){
@@ -120,27 +149,7 @@ function Update () {
 		}
 	}
 	
-	// UI
-	ray = this.uiCamera.ScreenPointToRay(Input.mousePosition);
-	if (Physics.Raycast(ray, hit, 1000) ) {
-		if (hit.transform.tag == "Palette") {
-			var palette: Palette = hit.collider.transform.GetComponent('Palette') as Palette;
-			this.SelectPalette(palette.GetIndex());
-			audio.PlayOneShot(soundPalette);
-		}
-	
-		if (hit.transform.tag == "Reset") {
-			resetButtonPressed = true;
-		}
-	}
-	
-	if (resetButtonPressed) {
-		if(!resetButton.IsSelected()) {
-			resetButton.Select();
-		}
-	} else {
-		resetButton.Reset();
-	}
+
 }
 
 function WaitAndDestroy(gameObject){
