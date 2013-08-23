@@ -1,10 +1,12 @@
 var Block : Transform;
 var baseTransform : Transform;
+var nonMarkerTarget: Transform;
 var blockCount : float = 4.0f;
 var removeBlock: Transform;
 var resetButton: ResetButton;
 var uiCamera: Camera;
 var destroyWait: float = 2.0f;
+var explosionPower: float = 2000;
 
 var soundPut: AudioClip;
 var soundDig: AudioClip;
@@ -44,7 +46,7 @@ function Explode() {
 	for (var i = 0; i < objects.length; i++) {
 		var object:GameObject = objects[i];
 		object.rigidbody.useGravity = true;
-		var power = 2000;
+		var power = explosionPower;
 		object.rigidbody.AddForce(new Vector3(power * (Random.value - 0.5f), power *  (Random.value - 0.5f), power  * (Random.value - 0.5f)));
 
 		WaitAndDestroy(objects[i]);
