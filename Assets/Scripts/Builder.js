@@ -3,6 +3,7 @@ var baseTransform : Transform;
 var blockCount : float = 4.0f;
 var removeBlock: Transform;
 var uiCamera: Camera;
+var destroyWait: float = 2.0f;
 
 private var textures = new Array();
 private var palettes = {};
@@ -38,6 +39,7 @@ function Update () {
 	var ray : Ray = this.camera.ScreenPointToRay(Input.mousePosition);
 	var hit : RaycastHit;
 
+	// Camera
 	if (Physics.Raycast(ray, hit, 1000) ) {
 		if (hit.transform.tag == "Block" || hit.transform.tag == "Terrain") {
 			if(this.selectedPaletteIndex == -1){
@@ -57,7 +59,7 @@ function Update () {
 				var newBlock : Transform = Instantiate(Block, buildPos, Quaternion.identity);
 				newBlock.renderer.material.mainTexture = textures[this.selectedPaletteIndex];
 				newBlock.tag = "Block";
-				newBlock.parent = baseTransform;
+				newBlock.parent = this.baseTransform;
 				newBlock.transform.localScale = Vector3.one / blockCount;
 			}
 		}
@@ -74,10 +76,20 @@ function Update () {
 		if (hit.transform.tag == "Reset") {
 			var objects = GameObject.FindGameObjectsWithTag("Block");
 			for (var i = 0; i < objects.length; i++) {
-				Destroy(objects[i]);
+				var object:GameObject = objects[i];
+				object.rigidbody.useGravity = true;
+				var power = 10000;
+				object.rigidbody.AddForce(new Vector3(power * (Random.value - 0.5f), power *  (Random.value - 0.5f), power  * (Random.value - 0.5f)));
+
+				WaitAndDestroy(objects[i]);
 			}
 		}
 	}
+}
+
+function WaitAndDestroy(gameObject){
+   yield WaitForSeconds(destroyWait);
+   Destroy(gameObject);
 }
 
 function GetPalette(i: int): Palette {
