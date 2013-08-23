@@ -147,6 +147,7 @@
      <Compile Include="Assets\Qualcomm Augmented Reality\Scripts\WordList.cs" />
      <Compile Include="Assets\Qualcomm Augmented Reality\Scripts\WordManager.cs" />
      <Compile Include="Assets\Qualcomm Augmented Reality\Scripts\WordResult.cs" />
+     <Compile Include="Assets\Scripts\TrackableEventHandler.cs" />
      <Compile Include="Assets\Scripts\WWWTest.cs" />
      <None Include="Assets\license_3rdpartynotice.txt" />
      <None Include="Assets\StreamingAssets\QCAR\unity.txt" />

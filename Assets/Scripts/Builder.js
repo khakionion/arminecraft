@@ -1,6 +1,6 @@
 var Block : Transform;
 var baseTransform : Transform;
-var nonMarkerTarget: Transform;
+var paletteTransform: Transform;
 var blockCount : float = 4.0f;
 var removeBlock: Transform;
 var resetButton: ResetButton;
@@ -24,9 +24,10 @@ function Start(){
 	for (var i = 0; i < textures.length; i++) {
 	
 		var newBlock : Transform = Instantiate(Block, Vector3.zero, Quaternion.identity);
+		Destroy(newBlock.gameObject.GetComponent('Rigidbody'));
 		newBlock.renderer.material.mainTexture = textures[i];
 		newBlock.tag = "Block";
-		newBlock.parent = this.uiCamera.transform;
+		newBlock.parent = paletteTransform;
 		newBlock.localPosition = new Vector3(-3 + 1.5f * i, -4, 15);
 		newBlock.localScale = Vector3.one;
 		newBlock.tag = 'Palette';
