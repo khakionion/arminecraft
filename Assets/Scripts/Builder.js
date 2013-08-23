@@ -13,10 +13,13 @@ var soundPut: AudioClip;
 var soundDig: AudioClip;
 var soundReset: AudioClip;
 var soundPalette: AudioClip;
-
+var reqPressTime = 0.3f;
 private var textures = new Array();
 private var palettes = {};
 private var selectedPaletteIndex: int = 0;
+private var pressedTime: float;
+private var pressStarted: boolean = false;
+private var prevPosX = 0; 
 
 function Start(){
 	textures = Resources.LoadAll("Textures", Texture);
@@ -68,40 +71,20 @@ function updateOrientation() {
 	paletteTransform.localPosition = new Vector3(-7.2 * this.camera.aspect + 3.7, -2.5, 1.2);
 }
 
-function Update () {
-	updateOrientation();
-	if (resetButton.IsFullSelected()) {
-		Explode();
-		resetButton.Reset();
-	}
-	
-	if (Input.GetMouseButtonUp(0)) {
-		if (resetButton.IsSelected()) {
-			resetButton.Reset();
-		}
-		return;
-	}
-	
-	if(!Input.GetMouseButtonDown(0)){
-		return;
-	}
-	
+function uiSelect() {  
 	var resetButtonPressed = false;
- 
- 	// UI 
- 	var uiPressed = false;
-	var ray = this.uiCamera.ScreenPointToRay(Input.mousePosition); 
+	var ray; 
 	var hit: RaycastHit;
+	ray = this.uiCamera.ScreenPointToRay(Input.mousePosition);
 	if (Physics.Raycast(ray, hit, 1000) ) { 
-		if (hit.transform.tag == "Palette") { 
-			uiPressed = true;
+		if (hit.transform.tag == "Palette") {
 			var palette: Palette = hit.collider.transform.GetComponent('Palette') as Palette;
-			this.SelectPalette(palette.GetIndex());
-			audio.PlayOneShot(soundPalette);
+			if (this.SelectPalette(palette.GetIndex())) {
+				audio.PlayOneShot(soundPalette); 
+			}
 		}
 	
 		if (hit.transform.tag == "Reset") { 
-			uiPressed = true;
 			resetButtonPressed = true;
 		}
 	}
@@ -113,11 +96,62 @@ function Update () {
 	} else {
 		resetButton.Reset();
 	}
-	
-	if (uiPressed) {
-		return; 
+}
+
+function Update () { 
+	if (pressStarted) { 
+		var delta = Input.mousePosition.x - prevPosX;
+		prevPosX = Input.mousePosition.x; 
+		if (Mathf.Abs(delta) > 10) {
+			 pressedTime = 0;
+		}  
+		if (Mathf.Abs(delta) > 1) {
+			var pos = sliderTransform.localPosition;
+			var newX = pos.x + delta / 30.0f; 
+			if (newX > 0) {
+				newX = 0;
+			}
+			
+			sliderTransform.localPosition = new Vector3(newX, pos.y, pos.z); 
+		}
+		Debug.Log(delta);
+		pressedTime += Time.deltaTime;
+		if (pressedTime > reqPressTime) {
+			uiSelect();  
+			pressedTime = 0;
+			pressStarted = false;
+		} 
+	}
+
+	updateOrientation();
+	if (resetButton.IsFullSelected()) {
+		Explode();
+		resetButton.Reset();
 	}
 	
+	if (Input.GetMouseButtonUp(0)) {
+		pressedTime = 0; 
+		pressStarted = false;
+		if (resetButton.IsSelected()) {
+			resetButton.Reset();
+		}
+		
+		return;
+	}
+	
+	if(!Input.GetMouseButtonDown(0)){
+		return;
+	}
+   
+    // Start pressing
+  	pressStarted = true; 
+  	pressedTime = 0; 
+  	prevPosX = Input.mousePosition.x;
+ 
+ 	// UI 
+	var ray; 
+	var hit: RaycastHit;
+
 	// Camera 
 	ray = this.camera.ScreenPointToRay(Input.mousePosition);
 	if (Physics.Raycast(ray, hit, 1000) ) {
@@ -165,8 +199,8 @@ function GetPalette(i: int): Palette {
 
 function SelectPalette(index: int) {
 	var selectedPalette = this.GetPalette(index);
-	if (selectedPalette.IsSelected()) {
-		return;
+	if (selectedPalette.IsSelected()) { 
+		return false;
 	}
 		
 	for (var entry in palettes) {
@@ -175,5 +209,6 @@ function SelectPalette(index: int) {
 	}
 
 	selectedPalette.Select();
-	this.selectedPaletteIndex = index;
+	this.selectedPaletteIndex = index; 
+	return true;
 }
