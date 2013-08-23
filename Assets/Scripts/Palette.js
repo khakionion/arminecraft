@@ -1,10 +1,15 @@
 var index: int;
 var isSelected: boolean;
 var roationSpeed: float = 50.0f;
+var isPlane: boolean = false;
 
 function Update() {
 	if (this.isSelected) {
-		this.transform.Rotate(new Vector3(roationSpeed * Time.deltaTime, roationSpeed * Time.deltaTime, 0));
+		if (isPlane) {
+			this.transform.Rotate(new Vector3(0, roationSpeed * Time.deltaTime, 0));
+		} else {
+			this.transform.Rotate(new Vector3(roationSpeed * Time.deltaTime, roationSpeed * Time.deltaTime, 0));
+		}
 	}
 }
 
